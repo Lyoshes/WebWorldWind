@@ -25,7 +25,20 @@ module.exports = function (grunt) {
                     baseUrl: 'src',
                     name: '../tools/almond',
                     include: ['WorldWind'],
-                    out: 'worldwindlib.js',
+                    out: 'worldwind.min.js',
+                    wrap: {
+                        startFile: 'tools/wrap.start',
+                        endFile: 'tools/wrap.end'
+                    }
+                }
+            },
+            compileDebug: {
+                options: {
+                    baseUrl: 'src',
+                    name: '../tools/almond',
+                    include: ['WorldWind'],
+                    optimize: 'none',
+                    out: 'worldwind.js',
                     wrap: {
                         startFile: 'tools/wrap.start',
                         endFile: 'tools/wrap.end'
@@ -42,7 +55,8 @@ module.exports = function (grunt) {
                 files: [
                     {src: [
                         'api-doc/**',
-                        'worldwindlib.js',
+                        'worldwind.js',
+                        'worldwind.min.js',
                         'apps/**',
                         'design-notes/**',
                         'examples/**',
@@ -65,13 +79,28 @@ module.exports = function (grunt) {
                     ]}
                 ]
             }
-        }
+        },
 
+        karma: {
+            unit: {
+                configFile: 'karma.conf.js',
+                singleRun: true,
+                reporters: ['dots', 'junit', 'html'],
+                junitReporter: {
+                    outputFile: 'test-results.xml',
+                    outputDir: 'test-results'
+                },
+                htmlReporter: {
+                    outputFile: 'test-results/report.html',
+                },
+            }
+        }
     });
 
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-jsdoc');
     grunt.loadNpmTasks('grunt-contrib-compress');
+    grunt.loadNpmTasks('grunt-karma');
 
-    grunt.registerTask('default', ['jsdoc', 'requirejs', 'compress']);
+    grunt.registerTask('default', ['karma', 'jsdoc', 'requirejs', 'compress']);
 };
